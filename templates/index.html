@@ -19,50 +19,118 @@
     </header>
 
     <main class="grid">
+      <!-- Password Breach Scanner -->
       <section class="card">
         <h2>Password Breach Scanner</h2>
-        <form action="/scan-password" method="post">
+        <form id="passwordForm">
           <input
             type="password"
             name="password"
             placeholder="Enter password"
-            disabled
+            required
           />
-          <button disabled>Scan</button>
+          <button type="submit">Scan</button>
         </form>
-        <small>Implemented in Step 2</small>
+        <div id="passwordResult"></div>
       </section>
 
+      <!-- Email Lookup -->
       <section class="card">
         <h2>Email Lookup</h2>
-        <form action="/lookup-email" method="post">
+        <form id="emailForm">
           <input
             type="email"
             name="email"
             placeholder="name@example.com"
-            disabled
+            required
           />
-          <button disabled>Lookup</button>
+          <button type="submit">Lookup</button>
         </form>
-        <small>Implemented in Step 3</small>
+        <div id="emailResult"></div>
       </section>
 
+      <!-- Image Metadata Extractor -->
       <section class="card">
         <h2>Image Metadata Extractor</h2>
-        <form
-          action="/extract-image"
-          method="post"
-          enctype="multipart/form-data"
-        >
-          <input type="file" name="image" accept="image/*" disabled />
-          <button disabled>Upload</button>
+        <form id="imageForm" enctype="multipart/form-data">
+          <input type="file" name="image" accept="image/*" required />
+          <button type="submit">Upload</button>
         </form>
-        <small>Implemented in Step 4</small>
+        <pre id="imageResult"></pre>
       </section>
     </main>
 
     <footer>
       <small>Built with Python + Flask</small>
     </footer>
+
+    <script>
+      // Password Form
+      document
+        .getElementById("passwordForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          const res = await fetch("/scan-password", {
+            method: "POST",
+            body: formData,
+          });
+          const data = await res.json();
+          const out = document.getElementById("passwordResult");
+          if (data.error) {
+            out.textContent = "Error: " + data.error;
+            out.style.color = "red";
+          } else if (data.breached) {
+            out.textContent = `⚠️ This password appeared ${data.count.toLocaleString()} times in breaches!`;
+            out.style.color = "darkred";
+          } else {
+            out.textContent =
+              "✅ This password was NOT found in known breaches.";
+            out.style.color = "green";
+          }
+        });
+
+      // Email Form
+      document
+        .getElementById("emailForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          const res = await fetch("/lookup-email", {
+            method: "POST",
+            body: formData,
+          });
+          const data = await res.json();
+          const out = document.getElementById("emailResult");
+          if (data.error) {
+            out.textContent = "Error: " + data.error;
+            out.style.color = "red";
+          } else {
+            out.textContent = data.status;
+            out.style.color = "blue";
+          }
+        });
+
+      // Image Metadata Form
+      document
+        .getElementById("imageForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          const res = await fetch("/extract-image", {
+            method: "POST",
+            body: formData,
+          });
+          const data = await res.json();
+          const out = document.getElementById("imageResult");
+          if (data.error) {
+            out.textContent = "Error: " + data.error;
+          } else if (data.metadata && Object.keys(data.metadata).length > 0) {
+            out.textContent = JSON.stringify(data.metadata, null, 2);
+          } else {
+            out.textContent = data.message || "No metadata found.";
+          }
+        });
+    </script>
   </body>
 </html>
