@@ -81,11 +81,10 @@
             out.textContent = "Error: " + data.error;
             out.style.color = "red";
           } else if (data.breached) {
-            out.textContent = `⚠️ This password appeared ${data.count.toLocaleString()} times in breaches!`;
+            out.textContent = ` This password appeared ${data.count.toLocaleString()} times in breaches!`;
             out.style.color = "darkred";
           } else {
-            out.textContent =
-              "✅ This password was NOT found in known breaches.";
+            out.textContent = "This password was NOT found in known breaches.";
             out.style.color = "green";
           }
         });

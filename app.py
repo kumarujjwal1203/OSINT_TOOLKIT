@@ -7,7 +7,7 @@ from PIL.ExifTags import TAGS
 load_dotenv()
 
 app = Flask(__name__)
-app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # 8 MB max upload
+app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  
 
 @app.route('/')
 def index():
@@ -17,9 +17,7 @@ def index():
 def health():
     return "OK", 200
 
-# ---------------------------
-# Password Breach Scanner
-# ---------------------------
+
 @app.route('/scan-password', methods=['POST'])
 def scan_password():
     password = request.form.get('password', '')
@@ -44,9 +42,6 @@ def scan_password():
 
     return jsonify({"breached": count > 0, "count": count})
 
-# ---------------------------
-# Simple Email Lookup
-# ---------------------------
 @app.route('/lookup-email', methods=['POST'])
 def lookup_email():
     email = request.form.get('email', '')
@@ -68,9 +63,6 @@ def lookup_email():
 
     return jsonify({"breached": False, "domain": domain, "status": status})
 
-# ---------------------------
-# Image Metadata Extractor
-# ---------------------------
 @app.route('/extract-image', methods=['POST'])
 def extract_image():
     if 'image' not in request.files:
